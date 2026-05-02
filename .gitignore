@@ -1,0 +1,26 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# Environments
+env/
+venv/
+.env
+
+# Databases & Cache (Specific to Dvara)
+*.db
+filter.bin
+.python-version
+
+# IDEs
+.vscode/
+.idea/
+
+# Docker logs
+*.log

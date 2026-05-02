@@ -1,0 +1,68 @@
+services:
+
+  # ------------------------------------------------------------------
+  # PostgreSQL — confirmed URLs + stats
+  # ------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: dvara_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dvara
+      POSTGRES_PASSWORD: dvara
+      POSTGRES_DB: dvara
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dvara"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ------------------------------------------------------------------
+  # Redis — bloom filter bitstring + caching
+  # ------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: dvara_redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ------------------------------------------------------------------
+  # FastAPI — the API server
+  # ------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: dvara_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://dvara:dvara@db:5432/dvara
+      FILTER_PATH: /app/.dvara/filter.bin
+      API_KEY: ${API_KEY:-}
+    volumes:
+      # Mount the local filter so ingestion updates are picked up
+      - dvara_filter:/app/.dvara
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+  dvara_filter:
