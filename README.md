@@ -224,6 +224,10 @@ dvara/
 *Dvara* (द्वार) is the Sanskrit word for **gateway** or **door**.
 
 Every URL is a gateway — dvara stands at that door and decides what gets through.
+
+
+---
+
 ## License
 
 MIT
