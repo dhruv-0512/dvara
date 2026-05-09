@@ -272,7 +272,16 @@ def update(output: str):
 # ------------------------------------------------------------------
 # stats
 # ------------------------------------------------------------------
+@cli.command()
+def benchmarks():
+    """Run performance benchmarks."""
+    
+    import subprocess
+    import sys
 
+    subprocess.run(
+        [sys.executable, "-m", "dvara.benchmarks"]
+    )
 @cli.command()
 def stats():
     """Show filter and API statistics.
