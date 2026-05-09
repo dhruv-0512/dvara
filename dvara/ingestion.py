@@ -135,7 +135,6 @@ def _parse_urlhaus_csv(content: bytes) -> Iterator[str]:
 
     try:
         with zipfile.ZipFile(io.BytesIO(content)) as zf:
-            # Usually csv.txt
             name = zf.namelist()[0]
 
             with zf.open(name) as f:
@@ -156,13 +155,11 @@ def _parse_urlhaus_csv(content: bytes) -> Iterator[str]:
         if row[0].startswith("#"):
             continue
 
-        # id,dateadded,url,...
         if len(row) >= 3:
             url = row[2].strip().strip('"')
 
             if url:
-                print("\nDEBUG URL:", url)
-                raise SystemExit
+                yield url
 def _parse_phishtank_json(content: bytes) -> Iterator[str]:
     """Parse PhishTank gzipped JSON."""
     try:
