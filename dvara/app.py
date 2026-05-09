@@ -375,4 +375,4 @@ async def health():
         "redis": state.redis is not None,
         "db": state.db_pool is not None,
     }
-```
+
