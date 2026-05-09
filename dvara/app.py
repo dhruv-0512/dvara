@@ -1,10 +1,8 @@
-```python
 """
 dvara/app.py
 
 FastAPI backend for dvara URL checking.
 """
-
 import hashlib
 import logging
 import os
