@@ -32,7 +32,6 @@ from dvara.config import API_BASE_URL, DEFAULT_FILTER_PATH, VERSION
 # Helpers
 # ------------------------------------------------------------------
 
-# ANSI colours (disabled on Windows if no ANSI support)
 RED    = "\033[91m"
 GREEN  = "\033[92m"
 YELLOW = "\033[93m"
@@ -42,13 +41,12 @@ RESET  = "\033[0m"
 
 
 def _color(text: str, code: str) -> str:
-    """Wrap text in ANSI colour code if stdout is a terminal."""
     if sys.stdout.isatty():
         return f"{code}{text}{RESET}"
     return text
 
+
 def _load_local_filter() -> BloomFilter | None:
-    """Load filter — local cache first, fall back to bundled."""
     if os.path.exists(DEFAULT_FILTER_PATH):
         return BloomFilter.from_file(DEFAULT_FILTER_PATH)
     from dvara.config import BUNDLED_FILTER_PATH
@@ -56,7 +54,10 @@ def _load_local_filter() -> BloomFilter | None:
         return BloomFilter.from_file(BUNDLED_FILTER_PATH)
     return None
 
+
 def _format_latency(ms: float) -> str:
+    if ms < 1:
+        return f"{ms:.2f}ms"   # e.g. 0.08ms instead of 0.0ms
     return f"{ms:.1f}ms"
 
 
@@ -106,7 +107,6 @@ def check(url: str, offline: bool, output_json: bool):
 
 def _check_online(url: str, output_json: bool):
     """Hit the API for a two-stage bloom + DB check."""
-    t0 = time.perf_counter()
     try:
         resp = requests.get(
             f"{API_BASE_URL}/api/check",
@@ -131,12 +131,15 @@ def _check_online(url: str, output_json: bool):
         return
 
     result   = data.get("result", "ERROR")
-    latency  = data.get("latency_ms", 0)
+    bloom_ms = data.get("bloom_ms")
+    total_ms = data.get("latency_ms", 0)
+    # Use bloom_ms (pure filter speed) as headline; fall back to total_ms
+    latency  = bloom_ms if (bloom_ms is not None and bloom_ms > 0) else total_ms
     source   = data.get("source")
     category = data.get("category")
     reason   = data.get("reason")
 
-    _print_result(url, result, latency, source, category, reason, mode="online")
+    _print_result(url, result, latency, total_ms, source, category, reason, mode="online")
 
 
 def _check_offline(url: str, output_json: bool):
@@ -161,6 +164,7 @@ def _check_offline(url: str, output_json: bool):
         click.echo(json.dumps({
             "url": url,
             "result": result,
+            "bloom_ms": round(latency_ms, 3),
             "latency_ms": round(latency_ms, 3),
             "mode": "offline",
             "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -168,19 +172,20 @@ def _check_offline(url: str, output_json: bool):
         return
 
     reason = "Bloom filter hit — run online check to confirm" if hit else None
-    _print_result(url, result, latency_ms, None, None, reason, mode="offline")
+    _print_result(url, result, latency_ms, latency_ms, None, None, reason, mode="offline")
 
 
 def _print_result(
     url: str,
     result: str,
-    latency_ms: float,
+    bloom_ms: float,
+    total_ms: float | None,
     source: str | None,
     category: str | None,
     reason: str | None,
     mode: str,
 ):
-    latency_str = _format_latency(latency_ms)
+    bloom_str = _format_latency(bloom_ms)
 
     if result == "CLEAN":
         icon  = "✅"
@@ -195,13 +200,13 @@ def _print_result(
         icon  = "✗"
         label = _color("ERROR", RED)
 
-    # Main result line
+    # Main result line — bloom_ms is the headline latency number
     parts = [icon, label]
     if source:
         parts.append(_color(f"| {source}", CYAN))
     if category:
         parts.append(_color(f"| {category}", CYAN))
-    parts.append(_color(f"| {latency_str}", RESET))
+    parts.append(_color(f"| {bloom_str}", RESET))
     parts.append(_color(f"| {mode}", RESET))
 
     click.echo(" ".join(parts))
@@ -210,7 +215,10 @@ def _print_result(
     display_url = url if len(url) <= 80 else url[:77] + "..."
     click.echo(f"  {_color(display_url, BOLD)}")
 
-    # Extra info
+    # Show total server latency as secondary line when online and meaningfully different
+    if mode == "online" and total_ms is not None and total_ms > bloom_ms + 0.5:
+        click.echo(f"  {_color(f'server total: {_format_latency(total_ms)}', CYAN)}")
+
     if reason:
         click.echo(f"  {_color(reason, YELLOW)}")
 
@@ -242,7 +250,6 @@ def update(output: str):
         click.echo(_color("✗ Cannot reach dvara API.", RED))
         sys.exit(1)
     except requests.HTTPError as e:
-        # Filter download endpoint not implemented yet — fall back to local ingestion
         click.echo(_color(
             f"⚠  Filter download endpoint not available ({e}).\n"
             "   Run ingestion locally instead:\n"
@@ -322,21 +329,32 @@ def stats():
     help="Path to save the built filter.",
 )
 @click.option("--dry-run", is_flag=True, help="Fetch feeds but do not write files.")
-def ingest(output: str, dry_run: bool):
+@click.option(
+    "--feeds",
+    multiple=True,
+    default=None,
+    help="Feeds to ingest (can repeat). Default: all. Choices: urlhaus_recent, urlhaus_full, phishtank, openphish, phishstats, certpl",
+)
+@click.option("--list-feeds", is_flag=True, help="List available feeds and exit.")
+def ingest(output: str, dry_run: bool, feeds: tuple, list_feeds: bool):
     """Fetch threat feeds and rebuild the local filter.
 
     \b
     Example:
         dvara ingest
         dvara ingest --dry-run
+        dvara ingest --feeds urlhaus_full --feeds phishtank
+        dvara ingest --list-feeds
     """
     from dvara.ingestion import main as ingestion_main
     args = ["--output", output]
     if dry_run:
         args.append("--dry-run")
+    if list_feeds:
+        args.append("--list-feeds")
+    for feed in feeds:
+        args += ["--feeds", feed]
     ingestion_main(args)
-
-
 # ------------------------------------------------------------------
 # Entry point
 # ------------------------------------------------------------------
