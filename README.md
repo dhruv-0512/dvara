@@ -1,6 +1,6 @@
 ﻿# dvara
 
-> High-speed malicious URL detection using a Bloom Filter. Checks 3 million URLs in 5MB of RAM.
+> High-speed malicious URL detection using a probabilistic Bloom Filter pipeline.
 
 [![PyPI version](https://badge.fury.io/py/dvara.svg)](https://badge.fury.io/py/dvara)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -9,85 +9,143 @@
 ```bash
 pip install dvara
 
-dvara check https://suspicious-site.com
-🚨 MALICIOUS | urlhaus | malware_download | 2.5ms | online
-
 dvara check https://google.com
-✅ CLEAN | 0.1ms | online
+✅ CLEAN | 0.03ms | online
+
+dvara check "http://xn--90abegbttpjb3bzb2j.xn--p1ai/doc/En/ACCOUNT/Auditor-of-State-Notification-of-EFT-Deposit"
+🚨 MALICIOUS | 213.2ms | online
 ```
 
 ---
 
-## What is dvara?
+# What is dvara?
 
-dvara is a Python CLI and library for detecting malicious URLs using a **Bloom Filter** — the same probabilistic data structure used internally by Chrome Safe Browsing.
+dvara is a Python CLI and backend system for malicious URL detection using a probabilistic Bloom Filter architecture inspired by systems like Google Safe Browsing.
 
-It ingests threat feeds from URLhaus, PhishTank, and OpenPhish (~86,000 URLs updated daily), stores them in a 5MB Bloom Filter, and checks any URL in under 1ms — without touching a database for clean URLs.
+It ingests live threat intelligence feeds from:
 
----
+* URLhaus
+* PhishTank
+* OpenPhish
+* Cert.pl
 
-## Architecture
+and currently indexes:
 
-```
-Daily ingestion job
-→ Pulls URLhaus + PhishTank + OpenPhish (~86k–3M URLs)
-→ Builds Bloom Filter (5.2MB, 0.1% FPR)
-→ Saves to ~/.dvara/filter.bin
-
-dvara check [url]  (online mode)
-→ FastAPI backend
-→ Hash URL → check 10 bit positions in Bloom Filter
-→ All bits OFF → CLEAN instantly (0.1ms, DB never touched)
-→ All bits ON  → query PostgreSQL confirmed_urls table
-→ Found        → MALICIOUS + source + category
-→ Not found    → SUSPICIOUS (false positive)
-
-dvara check [url] --offline
-→ Loads filter from ~/.dvara/filter.bin
-→ Checks locally, zero network calls
-→ dvara update to refresh
+```text
+268,970 confirmed malicious URLs
 ```
 
-### Two-stage design (the key insight)
+inside a compressed Bloom Filter occupying only:
 
-| Stage | What | Latency | When |
-|-------|------|---------|------|
-| 1 — Bloom Filter | Redis bitstring, 10 hash lookups | 0.1ms | Every request |
-| 2 — PostgreSQL | confirmed_urls table lookup | 1–3ms | Only on bloom hits |
+```text
+5.14 MB
+```
 
-Clean URLs **never touch the database**. False negatives are mathematically impossible.
+Most clean URLs are resolved entirely in-memory without touching the database.
 
----
-
-## Benchmarks
-
-| Metric | Result |
-|--------|--------|
-| Clean URL check | 0.1ms |
-| Malicious URL check (full pipeline) | 2.5ms |
-| URLs stored | 85,976 (scales to 3M) |
-| Filter size | 5.14 MB |
-| False negative rate | 0% (guaranteed) |
-| Target false positive rate | 0.1% |
-| Actual false positive rate | ~0% at current fill |
+Only Bloom filter hits trigger PostgreSQL confirmation.
 
 ---
 
-## Installation
+# Architecture
+
+```text
+Threat feeds
+    ↓
+URL normalization + deduplication
+    ↓
+Bloom Filter generation
+    ↓
+PostgreSQL confirmed_urls database
+    ↓
+FastAPI backend deployment
+    ↓
+CLI / API URL checks
+```
+
+## URL check pipeline
+
+```text
+dvara check [url]
+    ↓
+Bloom Filter lookup (~3µs local)
+    ↓
+No match
+    → CLEAN instantly
+
+Possible match
+    ↓
+SHA256(url)
+    ↓
+PostgreSQL confirmation lookup
+    ↓
+MALICIOUS or SUSPICIOUS
+```
+
+---
+
+# Why Bloom Filters?
+
+Traditional hash sets for millions of URLs consume hundreds of MBs of RAM.
+
+Bloom Filters allow:
+
+* massive memory compression
+* constant-time lookups
+* zero false negatives
+* extremely high throughput
+
+Tradeoff:
+
+* small false positive probability
+
+False positives are resolved using PostgreSQL confirmation.
+
+---
+
+# Benchmarks
+
+Generated using:
+
+```bash
+python -m dvara.benchmarks
+```
+
+| Metric                     | Result             |
+| -------------------------- | ------------------ |
+| Local Bloom lookup latency | ~0.003ms (3µs)     |
+| Throughput                 | ~145k URLs/sec     |
+| Indexed malicious URLs     | 268,970            |
+| Filter size                | 5.14 MB            |
+| Peak RAM usage             | ~10.53 MB          |
+| False negatives            | 0 observed         |
+| False positives            | 0 / 100,000 tested |
+| Bloom capacity             | 3,000,000 URLs     |
+
+> Benchmark latency refers to local in-memory Bloom Filter checks. Network/API requests are naturally slower due to HTTP and database confirmation stages.
+
+---
+
+# Threat Intelligence Sources
+
+| Feed      | Type                   |
+| --------- | ---------------------- |
+| URLhaus   | Malware URLs           |
+| PhishTank | Verified phishing URLs |
+| OpenPhish | Active phishing feeds  |
+| Cert.pl   | Malicious domains      |
+
+---
+
+# Installation
+
+## CLI only
 
 ```bash
 pip install dvara
 ```
-## Quick Start (no server needed)
 
-dvara ships with a built-in filter. After installing, offline checks work immediately:
-
-    dvara check https://suspicious-site.com --offline
-
-No API key, no Docker, no setup. Just install and check.
-
-
-### For running the backend server
+## Backend/server dependencies
 
 ```bash
 pip install dvara[server]
@@ -95,139 +153,159 @@ pip install dvara[server]
 
 ---
 
-## CLI Usage
+# CLI Usage
 
-### Check a URL (online mode — hits API)
+## Check URL (online)
+
 ```bash
-dvara check https://suspicious-site.com
+dvara check https://example.com
 ```
 
-### Check a URL (offline mode — local filter, zero network)
+## Check URL (offline)
+
 ```bash
-dvara check https://suspicious-site.com --offline
+dvara check https://example.com --offline
 ```
 
-### Show filter and API stats
+## Show stats
+
 ```bash
 dvara stats
 ```
 
-### Update local filter cache
+## Update local filter
+
 ```bash
 dvara update
 ```
 
-### Run ingestion manually
+## Run ingestion
+
 ```bash
 dvara ingest
-dvara ingest --dry-run
 ```
 
 ---
 
-## Running the Backend
+# Running the Backend
 
-### With Docker Compose (recommended)
+## Docker Compose
 
 ```bash
 git clone https://github.com/dhruv-0512/dvara
 cd dvara
+
 docker compose up --build
 ```
 
-This starts:
-- **FastAPI** — API server on port 8000
-- **Redis** — Bloom filter bitstring cache
-- **PostgreSQL** — confirmed URLs table
+Services:
 
-### Manually
+* FastAPI
+* PostgreSQL
+* Redis
+
+---
+
+## Manual setup
 
 ```bash
 pip install dvara[server]
 
-# Build the filter
 python -m dvara.ingestion
 
-# Start the API
-python -m uvicorn dvara.app:app --reload
+uvicorn dvara.app:app --reload
 ```
 
 ---
 
-## API Endpoints
+# API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/check?url=...` | GET | Two-stage URL check |
-| `/api/confirm?url=...` | GET | Direct DB lookup |
-| `/api/stats` | GET | Filter + connection stats |
-| `/api/reload` | POST | Reload filter from disk |
-| `/health` | GET | Health check |
+| Endpoint       | Description              |
+| -------------- | ------------------------ |
+| `/api/check`   | Full two-stage URL check |
+| `/api/confirm` | Direct PostgreSQL lookup |
+| `/api/stats`   | Bloom + backend stats    |
+| `/api/reload`  | Reload filter            |
+| `/health`      | Health check             |
 
-### Example response
+---
+
+# Example API Response
 
 ```json
 {
-  "url": "http://110.36.95.252:49267/bin.sh",
+  "url": "http://malicious-site.com",
   "result": "MALICIOUS",
-  "source": "urlhaus",
-  "category": "malware_download",
-  "latency_ms": 2.5,
+  "latency_ms": 213.2,
   "stage": "db",
-  "checked_at": "2026-05-02T13:01:04.767776+00:00"
+  "checked_at": "2026-05-09T09:08:32.663182+00:00"
 }
 ```
 
 ---
 
-## The Math
+# Project Structure
 
-- **n** = 3,000,000 URLs, **p** = 0.001 (0.1% FPR)
-- Bit array size: **m** = -(n × ln(p)) / (ln(2))² = ~43M bits = **5.2MB**
-- Hash count: **k** = (m/n) × ln(2) = **10 hash functions**
-- Hash algorithm: MurmurHash3 with seeds 0–9
-
-### Why Bloom Filter and not a hash set?
-
-3M URLs in a Python hash set = 500MB+. A Bloom Filter at 0.1% FPR = 5.2MB. False positives just trigger the DB confirm — acceptable. False negatives are mathematically impossible. The Bloom Filter is the right tool.
-
-### Why Redis and not disk?
-
-Multiple FastAPI workers need to read the same filter simultaneously. Disk requires locking. Redis bitstring is shared memory across all workers — horizontal scaling for free.
-
----
-
-## Threat Feed Sources
-
-| Feed | Format | URLs |
-|------|--------|------|
-| [URLhaus](https://urlhaus.abuse.ch) | CSV | ~26,000 |
-| [PhishTank](https://phishtank.org) | JSON (gzipped) | ~59,000 |
-| [OpenPhish](https://openphish.com) | Plaintext | ~300 |
-
----
-
-## Project Structure
-
-```
+```text
 dvara/
-├── bloom.py        ← BloomFilter class (core)
-├── ingestion.py    ← Fetch feeds, build filter
-├── app.py          ← FastAPI backend
-├── cli.py          ← Click CLI commands
-└── config.py       ← Constants and env vars
+├── app.py
+├── bloom.py
+├── cli.py
+├── config.py
+├── ingestion.py
+├── benchmarks.py
 ```
 
 ---
-## Why "dvara"?
 
-*Dvara* (द्वार) is the Sanskrit word for **gateway** or **door**.
+# Technical Details
 
-Every URL is a gateway — dvara stands at that door and decides what gets through.
+## Bloom Filter Parameters
 
+```text
+Capacity:            3,000,000 URLs
+Target FPR:          0.1%
+Hash functions (k):  10
+Current fill ratio:  ~6%
+Filter size:         5.14 MB
+```
+
+## Hashing
+
+* MurmurHash3 for Bloom lookups
+* SHA256 for PostgreSQL confirmation keys
 
 ---
 
-## License
+# Deployment Stack
+
+| Component       | Service             |
+| --------------- | ------------------- |
+| API             | Render              |
+| Database        | Supabase PostgreSQL |
+| Redis           | Upstash Redis       |
+| Package hosting | PyPI                |
+
+---
+
+# Why "dvara"?
+
+*dvara* (द्वार) is the Sanskrit word for:
+
+> gateway / doorway
+
+Every URL is a gateway.
+
+dvara stands at that gateway and decides what gets through.
+
+---
+
+# Security Note
+
+dvara is intended for defensive cybersecurity research, malicious URL analysis, and educational purposes.
+
+While the system uses real threat intelligence feeds and probabilistic detection techniques, it should not be treated as a replacement for enterprise secure web gateways, antivirus engines, or production threat prevention systems.
+
+# License
 
 MIT
