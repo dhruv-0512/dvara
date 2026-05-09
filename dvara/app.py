@@ -113,7 +113,7 @@ async def _load_bloom():
         state.bloom = None
         return
 
-    state.bloom = BloomFilter.from_file(FILTER_PATH)
+    state.bloom = BloomFilter.load(FILTER_PATH)
 
     state.bloom_loaded_at = datetime.now(timezone.utc)
 
@@ -375,4 +375,3 @@ async def health():
         "redis": state.redis is not None,
         "db": state.db_pool is not None,
     }
-```
