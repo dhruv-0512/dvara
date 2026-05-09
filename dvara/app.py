@@ -375,7 +375,3 @@ async def health():
         "redis": state.redis is not None,
         "db": state.db_pool is not None,
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 6efa19c0606d7c4d3e67d5da69633a040f486f56
