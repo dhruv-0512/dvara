@@ -14,6 +14,7 @@ from typing import Optional
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from dvara.bloom import BloomFilter
@@ -375,3 +376,12 @@ async def health():
         "redis": state.redis is not None,
         "db": state.db_pool is not None,
     }
+
+# ------------------------------------------------------------------
+# Static Frontend
+# ------------------------------------------------------------------
+
+import os
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")

@@ -50,9 +50,9 @@ dev = [
 dvara = "dvara.cli:cli"
 
 [project.urls]
-Homepage = "https://github.com/dhruvh-0512/dvara"
-Repository = "https://github.com/dhruvh-0512/dvara"
-Issues = "https://github.com/dhruvh-0512/dvara/issues"
+Homepage = "https://github.com/dhruv-0512/dvara"
+Repository = "https://github.com/dhruv-0512/dvara"
+Issues = "https://github.com/dhruv-0512/dvara/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["dvara"]

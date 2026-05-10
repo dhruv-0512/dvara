@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>dvara | High-Speed Malicious URL Detection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "primary": "#4edea3",
+                "primary-container": "#10b981",
+                "on-primary": "#003824",
+                "on-primary-container": "#00422b",
+                "secondary": "#45dfa4",
+                "error": "#ffb4ab",
+                "surface": "#0e1511",
+                "surface-container-low": "#161d19",
+                "surface-container": "#1a211d",
+                "surface-container-high": "#242c27",
+                "surface-container-lowest": "#09100c",
+                "on-surface": "#dde4dd",
+                "on-surface-variant": "#bbcabf",
+                "outline": "#86948a",
+                "outline-variant": "#3c4a42",
+                "background": "#0e1511",
+                "tertiary": "#ffb3af"
+              },
+              "fontFamily": {
+                "headline-lg": ["Inter"],
+                "headline-md": ["Inter"],
+                "body-lg": ["Inter"],
+                "body-md": ["Inter"],
+                "mono-code": ["JetBrains Mono"],
+                "mono-label": ["JetBrains Mono"]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0e1511;
+            background-image: radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.03) 1px, transparent 0);
+            background-size: 20px 20px;
+            scroll-behavior: smooth;
+        }
+        .glass-card {
+            background: rgba(16, 24, 40, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-top-color: rgba(16, 185, 129, 0.3);
+            border-left-color: rgba(16, 185, 129, 0.3);
+        }
+        .emerald-glow {
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .terminal-well {
+            background: rgba(5, 10, 8, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary/30 selection:text-primary">
+
+<!-- Navigation -->
+<header class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_20px_rgba(16,185,129,0.05)]">
+    <nav class="flex justify-between items-center px-8 md:px-12 py-4 max-w-7xl mx-auto">
+        <div class="font-headline-md text-2xl font-bold text-primary tracking-tight">dvara</div>
+        <div class="hidden md:flex items-center gap-8">
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#features">Features</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#benchmarks">Benchmarks</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#download">Download</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#about">About</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="https://github.com/dhruv-0512/dvara" target="_blank" class="p-2 hover:bg-primary/10 rounded-lg transition-all duration-300">
+                <span class="material-symbols-outlined text-primary" data-icon="code">code</span>
+            </a>
+        </div>
+    </nav>
+</header>
+
+<main class="pt-32 pb-24 max-w-7xl mx-auto px-8 md:px-12 space-y-32">
+    
+    <!-- Hero Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+            <div class="space-y-4">
+                <h1 class="text-6xl lg:text-7xl font-bold text-primary emerald-glow tracking-tighter">dvara</h1>
+                <p class="text-lg text-on-surface-variant max-w-lg leading-relaxed">
+                    High-speed malicious URL detection using a probabilistic Bloom Filter pipeline. Precision security for technical architectures.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-4">
+                <a href="#download" class="px-8 py-3 bg-primary text-on-primary font-bold rounded-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all">
+                    Get Started
+                </a>
+                <a href="https://github.com/dhruv-0512/dvara" class="px-8 py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-all">
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+        <div class="glass-card p-6 rounded-xl overflow-hidden relative">
+            <div class="flex gap-1.5 mb-4">
+                <div class="w-3 h-3 rounded-full bg-error/40"></div>
+                <div class="w-3 h-3 rounded-full bg-tertiary/40"></div>
+                <div class="w-3 h-3 rounded-full bg-primary/40"></div>
+            </div>
+            <div class="terminal-well p-6 rounded-lg font-mono text-sm min-h-[220px]">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-primary opacity-70">$</span>
+                    <span>dvara check https://google.com</span>
+                </div>
+                <div class="flex items-center gap-3 mb-6 text-primary">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span>CLEAN | 0.03ms | online</span>
+                </div>
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-primary opacity-70">$</span>
+                    <span>dvara check "http://malicious-site.example"</span>
+                </div>
+                <div class="flex items-center gap-3 text-error">
+                    <span class="material-symbols-outlined text-sm">warning</span>
+                    <span>MALICIOUS | 213.2ms | online</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Pipeline Section -->
+    <section id="features">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-on-surface mb-4">Two-Stage Detection Pipeline</h2>
+            <div class="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+        </div>
+        <div class="glass-card p-8 md:p-12 rounded-xl mb-16 relative overflow-hidden">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="p-4 bg-surface-container rounded-lg border border-outline-variant/30 text-primary font-mono text-xs">URL INPUT</div>
+                    <span class="material-symbols-outlined text-primary-container mt-2">arrow_downward</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center w-full">
+                    <div class="glass-card px-8 py-6 rounded-lg border-primary/30 flex flex-col items-center gap-2 w-full text-center">
+                        <span class="font-mono text-primary font-bold">BLOOM FILTER</span>
+                        <span class="text-xs text-on-surface-variant">~3µs Latency</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-8 w-full md:w-64">
+                    <div class="glass-card p-4 border-primary/40 text-primary text-center">
+                        <span class="font-mono text-xs font-bold">NO MATCH: CLEAN</span>
+                    </div>
+                    <div class="glass-card p-4 border-error/40 text-error text-center relative">
+                        <span class="font-mono text-xs font-bold">MATCH -&gt; SHA256 -&gt; DB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-8 rounded-xl hover:bg-primary/5 transition-all">
+                <div class="mb-6 text-primary"><span class="material-symbols-outlined text-3xl">shield</span></div>
+                <h3 class="text-xl font-bold mb-2">Zero False Negatives</h3>
+                <p class="text-on-surface-variant">Guaranteed identification for all indexed malicious signatures. Always caught if added to the upstream dataset.</p>
+            </div>
+            <div class="glass-card p-8 rounded-xl hover:bg-primary/5 transition-all">
+                <div class="mb-6 text-primary"><span class="material-symbols-outlined text-3xl">speed</span></div>
+                <h3 class="text-xl font-bold mb-2">145K URLs/sec</h3>
+                <p class="text-on-surface-variant">Incredible local throughput optimized for high-traffic firewalls and security scanning pipelines.</p>
+            </div>
+            <div class="glass-card p-8 rounded-xl hover:bg-primary/5 transition-all">
+                <div class="mb-6 text-primary"><span class="material-symbols-outlined text-3xl">inventory_2</span></div>
+                <h3 class="text-xl font-bold mb-2">5.14 MB Filter</h3>
+                <p class="text-on-surface-variant">Extremely compact memory footprint. 268,970 URLs compressed into a portable probabilistic bitset.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold text-on-surface">Filter Statistics</h2>
+            <div class="flex items-center gap-2 text-primary font-mono text-xs">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                </span>
+                LIVE ENGINE
+            </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div class="glass-card p-6 rounded-lg text-center"><div class="text-primary font-mono text-xs mb-1">INDEXED</div><div class="text-xl font-bold">268,970</div></div>
+            <div class="glass-card p-6 rounded-lg text-center"><div class="text-primary font-mono text-xs mb-1">CAPACITY</div><div class="text-xl font-bold">3,000,000</div></div>
+            <div class="glass-card p-6 rounded-lg text-center"><div class="text-primary font-mono text-xs mb-1">FILL RATIO</div><div class="text-xl font-bold">~6%</div></div>
+            <div class="glass-card p-6 rounded-lg text-center"><div class="text-primary font-mono text-xs mb-1">FPR</div><div class="text-xl font-bold">0.1%</div></div>
+            <div class="glass-card p-6 rounded-lg text-center"><div class="text-primary font-mono text-xs mb-1">HASH FUNCTIONS</div><div class="text-xl font-bold">10</div></div>
+            <div class="glass-card p-6 rounded-lg text-center"><div class="text-primary font-mono text-xs mb-1">SIZE</div><div class="text-xl font-bold">5.14 MB</div></div>
+        </div>
+    </section>
+
+    <!-- Benchmarks Section -->
+    <section id="benchmarks">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-on-surface mb-2">Performance Benchmarks</h2>
+            <div class="flex items-center gap-2 text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary text-sm">terminal</span>
+                <p class="font-mono text-sm">Generated using <code class="text-primary">python -m dvara.benchmarks</code></p>
+            </div>
+        </div>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-outline-variant/30 bg-surface-container-low/50">
+                        <th class="px-8 py-4 font-mono text-xs text-outline uppercase">Metric Parameter</th>
+                        <th class="px-8 py-4 font-mono text-xs text-outline uppercase text-right">Performance Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-outline-variant/10 hover:bg-primary/5">
+                        <td class="px-8 py-4">Local Bloom lookup latency</td>
+                        <td class="px-8 py-4 text-right font-mono text-primary">~0.003ms</td>
+                    </tr>
+                    <tr class="border-b border-outline-variant/10 hover:bg-primary/5">
+                        <td class="px-8 py-4">Throughput</td>
+                        <td class="px-8 py-4 text-right font-mono text-primary">~145k URLs/sec</td>
+                    </tr>
+                    <tr class="border-b border-outline-variant/10 hover:bg-primary/5">
+                        <td class="px-8 py-4">Indexed malicious URLs</td>
+                        <td class="px-8 py-4 text-right font-mono text-primary">268,970</td>
+                    </tr>
+                    <tr class="border-b border-outline-variant/10 hover:bg-primary/5">
+                        <td class="px-8 py-4">Filter size</td>
+                        <td class="px-8 py-4 text-right font-mono text-primary">5.14 MB</td>
+                    </tr>
+                    <tr class="border-b border-outline-variant/10 hover:bg-primary/5">
+                        <td class="px-8 py-4">False positives</td>
+                        <td class="px-8 py-4 text-right font-mono text-primary">0 / 100,000 tested</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download">
+        <h2 class="text-3xl font-bold text-on-surface mb-8">Download & Install</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="glass-card p-8 rounded-lg space-y-6">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">terminal</span> Download from CLI
+                </h3>
+                <div class="terminal-well p-4 font-mono text-sm">
+                    <div class="text-on-surface-variant mb-1"># Base package (CLI only)</div>
+                    <div class="text-primary mb-4">$ pip install dvara</div>
+                    <div class="text-on-surface-variant mb-1"># Full package (includes Server/Backend support)</div>
+                    <div class="text-primary">$ pip install dvara[server]</div>
+                </div>
+                <a href="https://pypi.org/project/dvara/" class="inline-block bg-primary text-on-primary px-6 py-3 rounded-lg font-bold hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all">
+                    View on PyPI
+                </a>
+            </div>
+            
+            <div class="glass-card p-8 rounded-lg">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">code</span> Quick Commands
+                </h3>
+                <div class="space-y-4 font-mono text-sm">
+                    <div>
+                        <span class="text-primary">$ dvara check</span>
+                        <span class="text-on-surface-variant ml-2 block sm:inline"># Validate URL against filters</span>
+                    </div>
+                    <div>
+                        <span class="text-primary">$ dvara stats</span>
+                        <span class="text-on-surface-variant ml-2 block sm:inline"># View filter health metrics</span>
+                    </div>
+                    <div>
+                        <span class="text-primary">$ dvara update</span>
+                        <span class="text-on-surface-variant ml-2 block sm:inline"># Sync threat feeds</span>
+                    </div>
+                    <div>
+                        <span class="text-primary">$ dvara ingest</span>
+                        <span class="text-on-surface-variant ml-2 block sm:inline"># Process custom datasets</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="pt-8">
+        <div class="glass-card p-12 rounded-2xl max-w-4xl mx-auto text-center relative overflow-hidden emerald-glow mb-16">
+            <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
+            <div class="relative z-10">
+                <h2 class="text-3xl font-bold text-on-surface mb-8">Why 'dvara'?</h2>
+                <div class="text-7xl md:text-9xl mb-4 text-primary opacity-90 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                    द्वार
+                </div>
+                <div class="font-mono text-xs text-on-surface-variant uppercase tracking-[0.4em] mb-12">
+                    gateway / doorway
+                </div>
+                <blockquote class="text-2xl font-medium text-on-surface max-w-2xl mx-auto italic">
+                    "Every URL is a gateway. <span class="text-primary font-bold not-italic">dvara</span> stands at that gateway and decides what gets through."
+                </blockquote>
+            </div>
+        </div>
+
+        <div class="glass-card p-8 rounded-xl max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
+            <div class="flex-1 text-center md:text-left">
+                <h3 class="text-2xl font-bold text-on-surface mb-2">About the Creator</h3>
+                <p class="text-on-surface-variant mb-6 leading-relaxed">
+                    Built by <strong>Dhruv</strong>, an engineering student at BMSCE Bangalore with a focus on systems design and ML. dvara started as a curiosity about how probabilistic data structures could solve a real security problem, turns out, they can. It's a working tool, built from scratch, deployed, and installable right now with one command.
+                </p>
+                <div class="flex gap-6 font-mono text-sm text-primary justify-center md:justify-start">
+                    <a href="mailto:dhruvh3vedi@gmail.com" class="hover:underline flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">mail</span> Email
+                    </a>
+                    <a href="https://github.com/dhruv-0512" target="_blank" class="hover:underline flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">link</span> GitHub
+                    </a>
+                    <a href="https://www.linkedin.com/in/dhruv-trivedi-3005d/" target="_blank" class="hover:underline flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">link</span> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-surface-container-lowest border-t border-outline-variant/20 py-8 mt-12">
+    <div class="flex flex-col md:flex-row justify-between items-center px-8 md:px-12 max-w-7xl mx-auto gap-4">
+        <div class="font-bold text-primary text-xl">dvara</div>
+        <div class="flex gap-8">
+            <a href="https://github.com/dhruv-0512/dvara" class="text-on-surface-variant hover:text-primary transition-colors text-sm font-mono">GitHub</a>
+            <a href="https://github.com/dhruv-0512/dvara#readme" class="text-on-surface-variant hover:text-primary transition-colors text-sm font-mono">Documentation</a>
+        </div>
+        <div class="text-on-surface-variant text-sm font-mono">© 2026 Dhruv</div>
+    </div>
+</footer>
+
+</body>
+</html>
