@@ -1,10 +1,11 @@
-﻿# dvara
+# dvara
 
 > High-speed malicious URL detection using a probabilistic Bloom Filter pipeline.
 
 [![PyPI version](https://badge.fury.io/py/dvara.svg)](https://badge.fury.io/py/dvara)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit-brightgreen)](https://dvara-t19n.onrender.com/)
 
 ```bash
 pip install dvara
@@ -279,12 +280,13 @@ Filter size:         5.14 MB
 
 # Deployment Stack
 
-| Component       | Service             |
-| --------------- | ------------------- |
-| API             | Render              |
-| Database        | Supabase PostgreSQL |
-| Redis           | Upstash Redis       |
-| Package hosting | PyPI                |
+| Component       | Service                          |
+| --------------- | -------------------------------- |
+| API             | Render                           |
+| Live Demo       | https://dvara-t19n.onrender.com/ |
+| Database        | Supabase PostgreSQL              |
+| Redis           | Upstash Redis                    |
+| Package hosting | PyPI                             |
 
 ---
 
