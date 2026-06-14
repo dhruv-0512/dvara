@@ -1,187 +1,108 @@
 # dvara
 
-> High-speed malicious URL detection using a Bloom Filter accelerated verification pipeline backed by PostgreSQL, Redis, FastAPI, and AWS infrastructure.
+> *dvāra* — Sanskrit for gateway. A filter at the door, not behind it.
 
 [![PyPI version](https://badge.fury.io/py/dvara.svg)](https://badge.fury.io/py/dvara)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+High-speed malicious URL detection. Bloom Filter in memory. PostgreSQL verification behind it. 268,970+ threats indexed in 5 MB.
 
-[Live Demo](http://13.61.0.125:8000)
 ```bash
 pip install dvara
+```
 
-dvara check https://google.com
+```bash
+$ dvara check https://google.com
 ✅ CLEAN | 0.03ms | online
 
-dvara check "http://xn--90abegbttpjb3bzb2j.xn--p1ai/doc/En/ACCOUNT/Auditor-of-State-Notification-of-EFT-Deposit"
+$ dvara check "http://xn--90abegbttpjb3bzb2j.xn--p1ai/doc/En/ACCOUNT/Auditor-of-State-Notification-of-EFT-Deposit"
 🚨 MALICIOUS | 213.2ms | online
 ```
 
----
-
-# What is dvara?
-
-dvara is a malicious URL detection platform inspired by large-scale safe browsing systems.
-
-It combines:
-
-* Probabilistic Bloom Filters
-* PostgreSQL verification
-* Redis caching
-* FastAPI APIs
-* AWS-hosted infrastructure
-
-to provide extremely fast malicious URL lookups while maintaining a small memory footprint.
-
-Threat intelligence is continuously aggregated from:
-
-* URLhaus
-* PhishTank
-* OpenPhish
-* CERT Polska
-
-The current dataset contains:
-
-```text
-268,970+ confirmed malicious URLs
-```
-
-compressed into a Bloom Filter occupying only:
-
-```text
-5.14 MB
-```
-
-Most benign URLs are resolved entirely in memory without touching the database.
-
-Only Bloom Filter hits trigger PostgreSQL verification.
+[→ Live Demo](http://13.61.0.125:8000)
 
 ---
 
-# Key Features
+## Benchmarks
 
-* Bloom Filter accelerated malicious URL detection
-* Two-stage verification architecture
-* PostgreSQL-backed confirmation database
-* Redis integration
-* FastAPI REST API
-* Python CLI client
-* AWS-hosted deployment
-* Dockerized infrastructure
-* Threat intelligence feed aggregation
-* Memory-efficient large-scale URL indexing
-
----
-
-# Architecture
-
-```text
-Threat Intelligence Feeds
-        ↓
-Normalization & Deduplication
-        ↓
-Bloom Filter Generation
-        ↓
-PostgreSQL Verification Database
-        ↓
-FastAPI Backend
-        ↓
-CLI / REST API
-```
-
-## URL Check Pipeline
-
-```text
-dvara check [url]
-        ↓
-Bloom Filter Lookup
-        ↓
-No Match
-        └──► CLEAN
-
-Possible Match
-        ↓
-SHA256(URL)
-        ↓
-PostgreSQL Verification
-        ↓
-MALICIOUS / SUSPICIOUS
-```
-
----
-
-# Infrastructure
-
-Dvara is deployed as a fully self-hosted cybersecurity service on AWS.
-
-Production architecture:
-
-```text
-AWS EC2
-├── FastAPI API
-├── PostgreSQL Database
-├── Redis Cache
-├── Bloom Filter Storage
-└── Docker Compose
-```
-
-Infrastructure stack:
-
-| Component            | Technology              |
-| -------------------- | ----------------------- |
-| API Server           | FastAPI                 |
-| Infrastructure       | AWS EC2                 |
-| Containerization     | Docker + Docker Compose |
-| Database             | PostgreSQL              |
-| Cache Layer          | Redis                   |
-| URL Index            | Bloom Filter            |
-| Package Distribution | PyPI                    |
-
-The deployment is fully containerized and operates without managed database or cache providers.
-
-Features:
-
-* Self-hosted AWS deployment
-* Dockerized infrastructure
-* PostgreSQL-backed malicious URL verification
-* Redis caching layer
-* Bloom Filter accelerated lookups
-* Persistent volume storage
-* REST API + CLI support
-
----
-
-# Why Bloom Filters?
-
-Traditional hash sets containing millions of URLs require hundreds of megabytes of memory.
-
-Bloom Filters provide:
-
-* Massive memory compression
-* Constant-time lookups
-* Zero false negatives
-* Extremely high throughput
-
-Tradeoff:
-
-* Small false positive probability
-
-False positives are resolved through PostgreSQL verification.
-
----
-
-# Benchmarks
-
-| Metric                     | Result             |
-| -------------------------- | ------------------ |
-| Local Bloom Lookup Latency | ~0.003 ms (3 μs)   |
-| Throughput                 | ~145k URLs/sec     |
-| Indexed Malicious URLs     | 268,970+           |
-| Filter Size                | 5.14 MB            |
-| Peak RAM Usage             | ~10.53 MB          |
-| False Negatives            | 0 observed         |
-| False Positives            | 0 / 100,000 tested |
-| Bloom Capacity             | 3,000,000 URLs     |
+| Metric | Result |
+|---|---|
+| Bloom lookup latency | ~0.003 ms (3 μs) |
+| Throughput | ~145,000 URLs/sec |
+| Threats indexed | 268,970+ |
+| Filter size | 5.14 MB |
+| Peak RAM usage | ~10.53 MB |
+| Bloom capacity | 3,000,000 URLs |
+| False negatives | 0 observed |
+| False positives | 0 / 100,000 tested |
 
 > Benchmark latency refers to local in-memory Bloom Filter checks. Network requests naturally incur additional latency.
+
+---
+
+## Detection Pipeline
+
+```
+URL in
+  └─► Bloom Filter
+        ├─► No match   →  ✅ CLEAN  (never touches the database)
+        └─► Hit
+              └─► SHA256(URL)
+                    └─► PostgreSQL verification
+                          └─► 🚨 MALICIOUS / SUSPICIOUS
+```
+
+Most benign URLs are resolved entirely in memory. False positives from the filter are caught by verified hash lookup.
+
+---
+
+## Why Bloom Filters?
+
+Traditional hash sets containing millions of URLs require hundreds of megabytes of memory. Bloom Filters provide constant-time lookups, zero false negatives, and ~145k URLs/sec throughput — compressed into 5 MB.
+
+The tradeoff is a small false positive probability, which is fully resolved by the PostgreSQL verification stage. In practice: 0 false positives observed across 100,000 test URLs.
+
+---
+
+## Threat Intelligence
+
+Continuously aggregated, normalized, and deduplicated from:
+
+- [URLhaus](https://urlhaus.abuse.ch/)
+- [PhishTank](https://phishtank.org/)
+- [OpenPhish](https://openphish.com/)
+- [CERT Polska](https://cert.pl/)
+
+---
+
+## Infrastructure
+
+Self-hosted on a single AWS EC2 instance. Migrated from Render + Supabase + Upstash — one machine, full control, no managed service costs.
+
+```
+AWS EC2
+├── FastAPI          (REST API)
+├── PostgreSQL       (verification database)
+├── Redis            (cache layer)
+├── Bloom Filter     (in-memory URL index)
+└── Docker Compose   (orchestration)
+```
+
+---
+
+## REST API
+
+The FastAPI backend exposes a simple check endpoint:
+
+```bash
+curl http://13.61.0.125:8000/check?url=https://google.com
+```
+
+Swagger docs available at `/docs`.
+
+---
+
+## License
+
+MIT © dvara contributors
