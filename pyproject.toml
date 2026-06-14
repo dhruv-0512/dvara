@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dvara"
-version = "0.2.0"
+version = "0.2.1"
 description = "High-speed malicious URL detection using a Bloom Filter"
 readme = "README.md"
 license = { text = "MIT" }

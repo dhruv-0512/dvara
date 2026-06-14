@@ -1,7 +1,7 @@
 import os
 import importlib.resources
 
-VERSION = "0.1.2"
+VERSION = "0.2.1"
 
 API_BASE_URL = os.getenv(
     "DVARA_API_URL",
