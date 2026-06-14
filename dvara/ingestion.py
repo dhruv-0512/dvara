@@ -130,36 +130,6 @@ def normalize_url(raw: str) -> str | None:
 # Feed parsers
 # ------------------------------------------------------------------
 
-def _parse_urlhaus_csv(content: bytes) -> Iterator[str]:
-    """Parse URLhaus ZIP-compressed CSV."""
-
-    try:
-        with zipfile.ZipFile(io.BytesIO(content)) as zf:
-            name = zf.namelist()[0]
-
-            with zf.open(name) as f:
-                text = f.read().decode("utf-8", errors="ignore")
-
-    except Exception as e:
-        log.warning("URLHaus ZIP parse error: %s", e)
-        return
-
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
-
-    reader = csv.reader(io.StringIO(text))
-
-    for row in reader:
-        if not row:
-            continue
-
-        if row[0].startswith("#"):
-            continue
-
-        if len(row) >= 3:
-            url = row[2].strip().strip('"')
-
-            if url:
-                yield url
 def _parse_phishtank_json(content: bytes) -> Iterator[str]:
     """Parse PhishTank gzipped JSON."""
     try:

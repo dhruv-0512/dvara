@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0e1511;
+            background-image: radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+            color: #dde4dd;
+        }
+        .glass-card {
+            background: rgba(16, 24, 40, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-top: 1px solid rgba(16, 185, 129, 0.3);
+            border-left: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .emerald-glow {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.05);
+        }
+        .terminal-well {
+            background: rgba(9, 16, 12, 0.8);
+            border-radius: 4px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#86948a",
+                      "secondary": "#45dfa4",
+                      "primary-container": "#10b981",
+                      "on-tertiary": "#650911",
+                      "on-primary-fixed": "#002113",
+                      "on-surface": "#dde4dd",
+                      "primary-fixed-dim": "#4edea3",
+                      "surface": "#0e1511",
+                      "primary-fixed": "#6ffbbe",
+                      "tertiary-fixed": "#ffdad7",
+                      "tertiary": "#ffb3af",
+                      "on-error-container": "#ffdad6",
+                      "inverse-surface": "#dde4dd",
+                      "inverse-primary": "#006c49",
+                      "surface-tint": "#4edea3",
+                      "on-tertiary-fixed-variant": "#842225",
+                      "on-surface-variant": "#bbcabf",
+                      "on-secondary": "#003825",
+                      "surface-container-high": "#242c27",
+                      "surface-dim": "#0e1511",
+                      "surface-bright": "#343b36",
+                      "secondary-fixed-dim": "#45dfa4",
+                      "tertiary-fixed-dim": "#ffb3af",
+                      "surface-container": "#1a211d",
+                      "on-primary": "#003824",
+                      "secondary-fixed": "#68fcbf",
+                      "surface-container-lowest": "#09100c",
+                      "surface-container-highest": "#2f3632",
+                      "primary": "#4edea3",
+                      "error": "#ffb4ab",
+                      "tertiary-container": "#fc7c78",
+                      "background": "#0e1511",
+                      "inverse-on-surface": "#2b322d",
+                      "on-tertiary-fixed": "#410005",
+                      "outline-variant": "#3c4a42",
+                      "on-primary-fixed-variant": "#005236",
+                      "surface-variant": "#2f3632",
+                      "on-primary-container": "#00422b",
+                      "on-background": "#dde4dd",
+                      "surface-container-low": "#161d19",
+                      "secondary-container": "#00bd85",
+                      "on-secondary-fixed-variant": "#005137",
+                      "on-secondary-fixed": "#002114",
+                      "on-tertiary-container": "#711419",
+                      "on-secondary-container": "#00452e",
+                      "on-error": "#690005",
+                      "error-container": "#93000a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "container-max": "1440px",
+                      "margin-desktop": "48px",
+                      "unit": "4px",
+                      "gutter": "24px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "mono-code": ["jetbrainsMono"],
+                      "headline-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "mono-label": ["jetbrainsMono"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "mono-code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "mono-label": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_20px_rgba(16,185,129,0.05)]">
+<div class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight">dvara</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Features</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Benchmarks</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Install</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">About</a>
+<div class="flex gap-4 ml-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-primary/10 p-2 rounded-lg transition-all duration-300" data-icon="code">code</span>
+</div>
+</div>
+<!-- Mobile Menu Toggle -->
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-20 max-w-container-max mx-auto px-margin-desktop space-y-32">
+<!-- BENCHMARKS SECTION -->
+<section class="relative" id="benchmarks">
+<div class="mb-12">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Performance Benchmarks</h2>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="terminal">terminal</span>
+<p class="font-mono-code text-mono-code">Generated using <code class="text-secondary">python -m dvara.benchmarks</code></p>
+</div>
+</div>
+<div class="glass-card emerald-glow rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 bg-surface-container-low/50">
+<th class="px-8 py-4 font-mono-label text-mono-label text-outline uppercase tracking-wider">Metric Parameter</th>
+<th class="px-8 py-4 font-mono-label text-mono-label text-outline uppercase tracking-wider text-right">Performance Result</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">Local Bloom lookup latency</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">~0.003ms</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">Throughput</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">~145k URLs/sec</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">Indexed malicious URLs</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">268,970</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">Filter size</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">5.14 MB</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">Peak RAM usage</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">~10.53 MB</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">False negatives</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">0 observed</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">False positives</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">0 / 100,000 tested</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-8 py-4">Bloom capacity</td>
+<td class="px-8 py-4 text-right font-mono-code text-primary">3,000,000 URLs</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="mt-4 font-mono-label text-mono-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="info">info</span>
+                Latency benchmarks measured on an isolated M2 Unix environment. Results may vary based on system I/O.
+            </p>
+</section>
+<!-- THREAT INTELLIGENCE SECTION -->
+<section id="threat-intel">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-12">Threat Intelligence Feeds</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Feed Card 1 -->
+<div class="glass-card p-6 rounded-lg group hover:bg-primary/5 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="security">security</span>
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-mono-label tracking-widest">ACTIVE</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">URLhaus</h3>
+<p class="text-on-surface-variant text-body-md">Malware URLs gathered from a high-frequency sharing platform for research.</p>
+</div>
+<!-- Feed Card 2 -->
+<div class="glass-card p-6 rounded-lg group hover:bg-primary/5 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="phishing">phishing</span>
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-mono-label tracking-widest">ACTIVE</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">PhishTank</h3>
+<p class="text-on-surface-variant text-body-md">Verified phishing URLs based on community consensus and expert verification.</p>
+</div>
+<!-- Feed Card 3 -->
+<div class="glass-card p-6 rounded-lg group hover:bg-primary/5 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="language">language</span>
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-mono-label tracking-widest">ACTIVE</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">OpenPhish</h3>
+<p class="text-on-surface-variant text-body-md">Real-time intelligence on active phishing feeds and zero-day threat patterns.</p>
+</div>
+<!-- Feed Card 4 -->
+<div class="glass-card p-6 rounded-lg group hover:bg-primary/5 transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="policy">policy</span>
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-mono-label tracking-widest">ACTIVE</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Cert.pl</h3>
+<p class="text-on-surface-variant text-body-md">Authoritative malicious domain lists from Poland's national CSIRT.</p>
+</div>
+</div>
+</section>
+<!-- INSTALLATION SECTION -->
+<section id="install">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Get Started in Seconds</h2>
+<p class="text-on-surface-variant max-w-xl">Zero-configuration deployment. Whether you're running a local script or a high-traffic production server.</p>
+</div>
+<a class="bg-primary text-on-primary px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all" href="https://pypi.org/project/dvara/">
+                    View on PyPI <span class="material-symbols-outlined text-sm" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="space-y-6">
+<div class="glass-card p-6 rounded-lg">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="laptop_mac">laptop_mac</span>
+<h4 class="font-bold text-on-surface">CLI Only</h4>
+</div>
+<div class="terminal-well p-4 font-mono-code text-mono-code text-secondary">
+                            $ pip install dvara
+                        </div>
+</div>
+<div class="glass-card p-6 rounded-lg">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="dns">dns</span>
+<h4 class="font-bold text-on-surface">Backend / Server</h4>
+</div>
+<div class="terminal-well p-4 font-mono-code text-mono-code text-secondary">
+                            $ pip install dvara[server]
+                        </div>
+</div>
+</div>
+<div class="lg:col-span-2 glass-card p-8 rounded-lg relative overflow-hidden">
+<div class="flex items-center gap-2 mb-6 text-on-surface-variant border-b border-outline-variant/30 pb-4">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="ml-4 font-mono-label text-mono-label uppercase tracking-widest">Dvara Core CLI</span>
+</div>
+<div class="space-y-4 font-mono-code text-mono-code text-on-surface">
+<div class="flex gap-4">
+<span class="text-outline">$</span>
+<div>
+<span class="text-secondary">dvara check</span>
+<span class="text-on-surface-variant ml-2"># Validate specific URL against local bloom filters</span>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="text-outline">$</span>
+<div>
+<span class="text-secondary">dvara stats</span>
+<span class="text-on-surface-variant ml-2"># View filter health, size, and ingestion metrics</span>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="text-outline">$</span>
+<div>
+<span class="text-secondary">dvara update</span>
+<span class="text-on-surface-variant ml-2"># Synchronize with upstream threat intelligence feeds</span>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="text-outline">$</span>
+<div>
+<span class="text-secondary">dvara ingest</span>
+<span class="text-on-surface-variant ml-2"># Process custom URL datasets into binary filters</span>
+</div>
+</div>
+<div class="pt-4 text-primary opacity-50">
+                            [SYSTEM] Ready for tactical deployment...
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- DEPLOYMENT STACK SECTION -->
+<section id="deployment">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-12">Deployment Stack</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Stack Item 1 -->
+<div class="glass-card p-6 rounded-lg flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<div>
+<p class="font-mono-label text-mono-label text-outline uppercase">API</p>
+<p class="font-bold text-on-surface">Render</p>
+</div>
+</div>
+<!-- Stack Item 2 -->
+<div class="glass-card p-6 rounded-lg flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="database">database</span>
+</div>
+<div>
+<p class="font-mono-label text-mono-label text-outline uppercase">Database</p>
+<p class="font-bold text-on-surface">Supabase PostgreSQL</p>
+</div>
+</div>
+<!-- Stack Item 3 -->
+<div class="glass-card p-6 rounded-lg flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="speed">speed</span>
+</div>
+<div>
+<p class="font-mono-label text-mono-label text-outline uppercase">Redis</p>
+<p class="font-bold text-on-surface">Upstash Redis</p>
+</div>
+</div>
+<!-- Stack Item 4 -->
+<div class="glass-card p-6 rounded-lg flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="package_2">package_2</span>
+</div>
+<div>
+<p class="font-mono-label text-mono-label text-outline uppercase">Package Hosting</p>
+<p class="font-bold text-on-surface">PyPI</p>
+</div>
+</div>
+</div>
+</section>
+<!-- WHY DVARA SECTION -->
+<section class="flex justify-center" id="why-dvara">
+<div class="glass-card p-12 md:p-24 rounded-2xl max-w-4xl w-full text-center relative overflow-hidden emerald-glow">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
+<div class="relative z-10">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-8">Why 'dvara'?</h2>
+<div class="text-[80px] md:text-[120px] leading-none mb-4 text-primary opacity-90 tracking-tighter drop-shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                        द्वार
+                    </div>
+<div class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-[0.4em] mb-12">
+                        gateway / doorway
+                    </div>
+<blockquote class="text-2xl md:text-3xl font-headline-md text-on-surface max-w-2xl mx-auto italic">
+                        "Every URL is a gateway. <span class="text-primary font-bold not-italic">dvara</span> stands at that gateway and decides what gets through."
+                    </blockquote>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/20 py-12 px-margin-desktop">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-container-max mx-auto">
+<div class="flex flex-col items-center md:items-start gap-2">
+<div class="font-headline-md text-headline-md font-bold text-primary">dvara</div>
+<p class="font-mono-label text-mono-label text-on-surface-variant">© 2024 dvara Security. Built for high-stakes digital environments.</p>
+</div>
+<div class="flex gap-8 items-center">
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">GitHub</a>
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">PyPI</a>
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+</div>
+<div class="flex flex-col items-center md:items-end">
+<div class="text-primary underline font-mono-label text-mono-label mb-1">MIT License</div>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2026 Dhruv</p>
+</div>
+</div>
+</footer>
+</body></html>

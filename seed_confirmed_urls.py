@@ -6,7 +6,7 @@ import io
 import csv
 import hashlib
 
-DATABASE_URL = "postgresql://postgres.mqyynimufylcmudmbluo:Dhruvtri20%40@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
+DATABASE_URL = "postgresql://dvara:dvara@localhost:5432/dvara"
 
 FEEDS = [
     "https://urlhaus.abuse.ch/downloads/csv/",

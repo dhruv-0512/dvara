@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>dvara | High-Speed Malicious URL Detection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ffb4ab",
+                      "primary-container": "#10b981",
+                      "outline": "#86948a",
+                      "on-primary": "#003824",
+                      "primary-fixed-dim": "#4edea3",
+                      "surface-dim": "#0e1511",
+                      "surface-container-low": "#161d19",
+                      "on-secondary": "#003825",
+                      "on-tertiary": "#650911",
+                      "tertiary-fixed-dim": "#ffb3af",
+                      "surface-tint": "#4edea3",
+                      "background": "#0e1511",
+                      "inverse-surface": "#dde4dd",
+                      "surface-container-lowest": "#09100c",
+                      "on-tertiary-fixed": "#410005",
+                      "on-surface": "#dde4dd",
+                      "surface-bright": "#343b36",
+                      "tertiary-container": "#fc7c78",
+                      "surface-container": "#1a211d",
+                      "on-error": "#690005",
+                      "tertiary-fixed": "#ffdad7",
+                      "on-primary-fixed": "#002113",
+                      "primary-fixed": "#6ffbbe",
+                      "surface": "#0e1511",
+                      "on-secondary-fixed": "#002114",
+                      "tertiary": "#ffb3af",
+                      "secondary-container": "#00bd85",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-fixed-variant": "#005236",
+                      "on-secondary-fixed-variant": "#005137",
+                      "on-secondary-container": "#00452e",
+                      "on-tertiary-fixed-variant": "#842225",
+                      "secondary-fixed": "#68fcbf",
+                      "error-container": "#93000a",
+                      "surface-variant": "#2f3632",
+                      "inverse-primary": "#006c49",
+                      "on-surface-variant": "#bbcabf",
+                      "on-tertiary-container": "#711419",
+                      "on-background": "#dde4dd",
+                      "inverse-on-surface": "#2b322d",
+                      "on-primary-container": "#00422b",
+                      "outline-variant": "#3c4a42",
+                      "surface-container-high": "#242c27",
+                      "primary": "#4edea3",
+                      "surface-container-highest": "#2f3632",
+                      "secondary": "#45dfa4",
+                      "secondary-fixed-dim": "#45dfa4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "container-max": "1440px",
+                      "unit": "4px",
+                      "margin-desktop": "48px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "mono-label": ["JetBrains Mono"],
+                      "mono-code": ["JetBrains Mono"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "mono-label": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "mono-code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0e1511;
+            background-image: radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.03) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .glass-card {
+            background: rgba(16, 24, 40, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-top-color: rgba(16, 185, 129, 0.3);
+            border-left-color: rgba(16, 185, 129, 0.3);
+        }
+        .emerald-glow {
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .terminal-well {
+            background: rgba(5, 10, 8, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar Section -->
+<header class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_20px_rgba(16,185,129,0.05)]">
+<nav class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight">dvara</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1" href="#">Features</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Benchmarks</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Install</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">About</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-primary/10 rounded-lg transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined text-primary" data-icon="code">code</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="pt-32 pb-24">
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-32">
+<div class="space-y-8">
+<div class="space-y-4">
+<h1 class="font-headline-lg text-6xl lg:text-7xl text-primary emerald-glow tracking-tighter">dvara</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg leading-relaxed">
+                        High-speed malicious URL detection using a probabilistic Bloom Filter pipeline. Precision security for technical architectures.
+                    </p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="px-8 py-3 bg-primary text-on-primary font-bold rounded-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all duration-300 active:scale-95">
+                        Get Started
+                    </button>
+<button class="px-8 py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-all duration-300 active:scale-95 flex items-center gap-2">
+                        View on GitHub
+                    </button>
+</div>
+</div>
+<div class="glass-card p-6 rounded-xl overflow-hidden relative group">
+<div class="flex gap-1.5 mb-4">
+<div class="w-3 h-3 rounded-full bg-error/40"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary/40"></div>
+<div class="w-3 h-3 rounded-full bg-primary/40"></div>
+</div>
+<div class="terminal-well p-6 rounded-lg font-mono-code text-mono-code min-h-[220px]">
+<div class="flex items-center gap-2 mb-4">
+<span class="text-primary opacity-70">$</span>
+<span>dvara check https://google.com</span>
+</div>
+<div class="flex items-center gap-3 mb-6 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" data-weight="fill">check_circle</span>
+<span>CLEAN | 0.03ms | online</span>
+</div>
+<div class="flex items-center gap-2 mb-4">
+<span class="text-primary opacity-70">$</span>
+<span>dvara check "http://malicious-site.example"</span>
+</div>
+<div class="flex items-center gap-3 text-error">
+<span class="material-symbols-outlined text-sm" data-icon="warning" data-weight="fill">warning</span>
+<span>MALICIOUS | 213.2ms | online</span>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent pointer-events-none"></div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="max-w-container-max mx-auto px-margin-desktop mb-32">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">Two-Stage Detection Pipeline</h2>
+<div class="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+</div>
+<!-- Flowchart Visual -->
+<div class="glass-card p-12 rounded-xl mb-16 relative overflow-hidden">
+<div class="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+<div class="flex flex-col items-center">
+<div class="p-4 bg-surface-container rounded-lg border border-outline-variant/30 text-primary font-mono-label mb-2">URL INPUT</div>
+<span class="material-symbols-outlined text-primary-container" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent hidden md:block absolute top-1/2 -z-10"></div>
+<div class="glass-card px-8 py-6 rounded-lg border-primary/30 flex flex-col items-center gap-2">
+<span class="font-mono-label text-primary">BLOOM FILTER</span>
+<span class="text-xs text-on-surface-variant opacity-60">~3µs Latency</span>
+</div>
+</div>
+<div class="flex flex-col gap-8 md:w-64">
+<div class="glass-card p-4 border-primary/40 text-primary text-center">
+<span class="font-mono-label">NO MATCH: CLEAN</span>
+</div>
+<div class="glass-card p-4 border-error/40 text-error text-center relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2">
+<span class="material-symbols-outlined text-primary-container text-sm" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<span class="font-mono-label">MATCH -&gt; SHA256 -&gt; DB</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Features Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="glass-card p-8 rounded-xl hover:bg-primary/5 transition-all duration-500 group">
+<div class="mb-6 inline-flex p-3 bg-primary/10 rounded-lg text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="shield_check">shield</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Zero False Negatives</h3>
+<p class="text-on-surface-variant leading-relaxed">Guaranteed identification for all indexed malicious signatures. Always caught if added to the upstream dataset.</p>
+</div>
+<div class="glass-card p-8 rounded-xl hover:bg-primary/5 transition-all duration-500 group">
+<div class="mb-6 inline-flex p-3 bg-primary/10 rounded-lg text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">145K URLs/sec</h3>
+<p class="text-on-surface-variant leading-relaxed">Incredible local throughput optimized for high-traffic firewalls and security scanning pipelines.</p>
+</div>
+<div class="glass-card p-8 rounded-xl hover:bg-primary/5 transition-all duration-500 group">
+<div class="mb-6 inline-flex p-3 bg-primary/10 rounded-lg text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">5.14 MB Filter</h3>
+<p class="text-on-surface-variant leading-relaxed">Extremely compact memory footprint. 268,970 URLs compressed into a portable probabilistic bitset.</p>
+</div>
+</div>
+</section>
+<!-- Live Stats Section -->
+<section class="max-w-container-max mx-auto px-margin-desktop">
+<div class="flex items-center justify-between mb-12">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Filter Statistics</h2>
+<div class="flex items-center gap-2 text-primary font-mono-label">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+                    LIVE ENGINE
+                </div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<div class="glass-card p-6 rounded-lg text-center">
+<div class="text-primary font-mono-label mb-1">INDEXED</div>
+<div class="font-headline-md text-headline-md">268,970</div>
+</div>
+<div class="glass-card p-6 rounded-lg text-center">
+<div class="text-primary font-mono-label mb-1">CAPACITY</div>
+<div class="font-headline-md text-headline-md">3,000,000</div>
+</div>
+<div class="glass-card p-6 rounded-lg text-center">
+<div class="text-primary font-mono-label mb-1">FILL RATIO</div>
+<div class="font-headline-md text-headline-md">~6%</div>
+</div>
+<div class="glass-card p-6 rounded-lg text-center">
+<div class="text-primary font-mono-label mb-1">FPR</div>
+<div class="font-headline-md text-headline-md">0.1%</div>
+</div>
+<div class="glass-card p-6 rounded-lg text-center">
+<div class="text-primary font-mono-label mb-1">HASH FUNCTIONS</div>
+<div class="font-headline-md text-headline-md">10</div>
+</div>
+<div class="glass-card p-6 rounded-lg text-center border-primary/30">
+<div class="text-primary font-mono-label mb-1">SIZE</div>
+<div class="font-headline-md text-headline-md">5.14 MB</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Section -->
+<footer class="w-full py-12 px-margin-desktop border-t border-outline-variant/20 bg-surface-container-lowest">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-container-max mx-auto">
+<div class="flex flex-col gap-2">
+<div class="font-headline-md text-headline-md font-bold text-primary">dvara</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">
+                    © 2024 dvara Security. Built for high-stakes digital environments.
+                </p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">GitHub</a>
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">Twitter</a>
+<a class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors" href="#">Security Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

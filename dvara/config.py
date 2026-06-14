@@ -1,11 +1,11 @@
 import os
 import importlib.resources
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 API_BASE_URL = os.getenv(
     "DVARA_API_URL",
-    "https://dvara-t19n.onrender.com"
+    "http://13.61.0.125:8000"
 )
 DEFAULT_FILTER_PATH = os.getenv(
     "DVARA_FILTER_PATH",

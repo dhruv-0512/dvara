@@ -6,6 +6,7 @@ FastAPI backend for dvara URL checking.
 import hashlib
 import logging
 import os
+import shutil
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
